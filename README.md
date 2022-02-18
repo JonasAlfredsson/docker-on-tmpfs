@@ -1,2 +1,2 @@
-# docker-on-tempfs
-GitHub Action which mounts a tempfs volume on `/var/lib/docker`.
+# docker-on-tmpfs
+GitHub Action which mounts a tmpfs volume on `/var/lib/docker`.
