@@ -1,0 +1,60 @@
+name: 'Docker on tmpfs'
+description: "Updates the runner's swap space, mounts a tmpfs on /var/lib/docker and restarts the daemon."
+author: 'JonasAlfredsson'
+branding:
+  icon: 'shuffle'
+  color: 'yellow'
+
+inputs:
+  tmpfs_size:
+    description: 'Size of the tmpfs mount to be used (in gigabytes)'
+    required: false
+    type: number
+    default: 5
+  swap_size:
+    description: 'Size of the new swap space (in gigabytes)'
+    required: false
+    type: number
+    default: 4
+  swap_location:
+    description: 'Path to the new swap file'
+    required: false
+    default: '/mnt/swapfile'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Replace the current swap file
+      if: inputs.swap_size != 4 || inputs.swap_location != '/mnt/swapfile'
+      shell: bash
+      run: |
+        sudo swapoff /mnt/swapfile
+
+        sudo rm -v /mnt/swapfile
+
+        sudo fallocate -l ${{ inputs.swap_size }}G "${{ inputs.swap_location }}"
+
+        sudo chmod 600 "${{ inputs.swap_location }}"
+
+        sudo mkswap "${{ inputs.swap_location }}"
+
+        sudo swapon "${{ inputs.swap_location }}"
+
+    - name: Show current memory and swap status
+      shell: bash
+      run: |
+        sudo free -h
+        echo
+        sudo swapon --show
+
+    - name: Mount a tmpfs over /var/lib/docker
+      shell: bash
+      run: |
+        if [ ! -d "/var/lib/docker" ]; then
+          echo "Directory '/var/lib/docker' not found"
+          ecit 1
+        fi
+
+        sudo mount -t tmpfs -o size=${{ inputs.tmpfs_size }}G tmpfs /var/lib/docker
+
+        sudo systemctl restart docker
