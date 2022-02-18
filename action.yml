@@ -58,3 +58,5 @@ runs:
         sudo mount -t tmpfs -o size=${{ inputs.tmpfs_size }}G tmpfs /var/lib/docker
 
         sudo systemctl restart docker
+
+        sudo df -h | grep docker
