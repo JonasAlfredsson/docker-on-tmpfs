@@ -36,7 +36,7 @@ above, but there are three solutions I would like to give extra credit to:
 
 ```yaml
 - name: Run Docker on tmpfs
-  uses: JonasAlfredsson/docker-on-tmpfs@v1.0.0
+  uses: JonasAlfredsson/docker-on-tmpfs@v1
   with:
     tmpfs_size: 5
     swap_size: 4
