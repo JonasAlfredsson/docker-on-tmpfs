@@ -52,7 +52,7 @@ runs:
       run: |
         if [ ! -d "/var/lib/docker" ]; then
           echo "Directory '/var/lib/docker' not found"
-          ecit 1
+          exit 1
         fi
 
         sudo mount -t tmpfs -o size=${{ inputs.tmpfs_size }}G tmpfs /var/lib/docker
